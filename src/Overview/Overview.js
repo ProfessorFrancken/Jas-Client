@@ -15,7 +15,7 @@ export default class Overview extends Component {
     }
 
     dealer() {
-        return this.props.players[this.props.hands.length % 4].name
+        return this.props.players[(this.props.hands.length - 1) % 4].name
     }
 
     players(team) {
@@ -78,30 +78,33 @@ export default class Overview extends Component {
                         })].reverse();
 
         return (
-        <div className="card my-4">
-            <div className="card-body">
-                <h2>
-                    Overview
-                </h2>
+            <div className="card my-4">
 
-                <button className="btn btn-lg btn-block btn-primary" onClick={() => this.dealHand()}>
+                <button className="btn btn-lg btn-block btn-primary rounded-0" onClick={() => this.dealHand()}>
                     Deal a new hand
                 </button>
 
-                <p>
-                    {this.players('they').join(' and ')} have to crawl twice
-                </p>
+                <div className="row no-gutters d-flex justify-content-around align-items-center">
+                    {this.props.players.map((player, idx) => {
+                         let isDealer = player.name === this.dealer();
+                         let dealerStyle = "bg-dark text-white";
+                         let playerStyle = "";
 
-                <p>
-                    {this.dealer()} is the dealer
-                </p>
+                         console.log(idx);
+                         return <div className="col">
+                             <div className={"text-center p-4 " + (isDealer ? dealerStyle : playerStyle)}>
+                                 {idx + 1}. {player.name} {isDealer ? <span><br />(Dealer)</span> : ""}
+                             </div>
+                         </div>
+                    })}
+                </div>
 
-                <table className="table table-striped">
+                <table className="table table-striped mb-0">
                     <thead>
                         <tr>
                             <th></th>
-                            <th colSpan="2">We</th>
-                            <th colSpan="2">They</th>
+                            <th colSpan="2">{this.players('we').join(' and ')}</th>
+                            <th colSpan="2">{this.players('they').join(' and ')}</th>
                         </tr>
                         <tr>
                             <th>#</th>
@@ -116,7 +119,6 @@ export default class Overview extends Component {
                     </tbody>
                 </table>
             </div>
-        </div>
         )
     }
 };
