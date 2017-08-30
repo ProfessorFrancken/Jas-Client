@@ -35,6 +35,6 @@ export const Club =    () => <SuitIcon src={clubs} alt="Suit of clubs"/>;
 export const Sans =    () => <SuitIcon src={sans} width="60px" alt="Choose to play sans"/>;
 
 export const Bid = (props) => <span>
-    <strong>{props.bid}</strong>
+    <strong className="mr-2">{props.bid}</strong>
     {suitStringToComponent(props.suit)}
 </span>;
