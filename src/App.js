@@ -7,6 +7,13 @@ import Bidding from './Bidding/Bidding';
 import PlayHand from './PlayHand/PlayHand';
 import Overview from './Overview/Overview';
 
+import filledState from './filled_state';
+import handlers from './Handlers';
+import Help from './Help';
+
+import logo from './assets/tfv-professor-francken.png';
+
+
 // Be sure to include styles at some point, probably during your bootstrapping
 
 
@@ -68,6 +75,8 @@ class JasApp extends Component {
             // overview state (all games)
             hands: []
         };
+
+        /* initialState = filledState;*/
 
         const reducers = [
             (state, event) => {
@@ -241,6 +250,11 @@ class JasApp extends Component {
 
     pushEvent(event)  {
         this.props.pushEvent(event);
+
+        var that = this;
+        this.props.handlers.forEach((handle) => {
+            handle(event, this.state, that);
+        });
     }
 
     renderCurrentState()
@@ -280,17 +294,38 @@ class JasApp extends Component {
     }
 
     render() {
+
+        const Header = () => {
+            return (
+                <div className="mb-4">
+                    <nav className="navbar navbar-dark bg-dark">
+                        <div className="container">
+                            <a className="navbar-brand" href="/">
+                                <img
+                                    src={logo}
+                                    height="50"
+                                    alt="T.F.V. 'Professor Francken'"
+                                    style={{filter: "brightness(0) invert(1)"}}
+                                    className="mr-3"
+                                />
+                                Francken Jas ELO
+                            </a>
+
+                            <Help clearEvents={this.props.clearEvents}/>
+                        </div>
+                    </nav>
+                </div>
+            );
+        }
+
+
         return (
             <div>
-                <h1 className="text-center display-1 my-4">
-                    Fjelo!
-                    <small className="h2 text-muted my-5">
-                        <br/>
-                        Francken Jas ELO
-                    </small>
-                </h1>
+                <Header />
 
-                {this.renderCurrentState()}
+                <div className="container">
+                    {this.renderCurrentState()}
+                </div>
             </div>
         );
     }
@@ -301,7 +336,13 @@ class EventSourcedApp extends Component{
     {
         super();
 
-        this.state = { events: [] };
+        const events = JSON.parse(localStorage.getItem('events')) || [];
+
+        this.state = { events };
+    }
+
+    clearEvents() {
+        this.setState({ events: [] });
     }
 
     pushEvent(event) {
@@ -348,25 +389,30 @@ class EventSourcedApp extends Component{
          */
 
         this.setState((state) => {
+            localStorage.setItem(
+                'events',
+                JSON.stringify(
+                    [...state.events, decoratedEvent]
+                )
+            );
+
             return {
                 events: [...state.events, decoratedEvent]
             }
         });
 
-        this.props.handlers.forEach((handle) => {
-            handle(decoratedEvent);
-        });
+
     }
 
     render() {
         let that = this;
 
-        console.log(this.state.events);
-
         return <JasApp
             key={this.state.events.length}
             pushEvent={(event) => that.pushEvent(event)}
+            clearEvents={() => that.clearEvents()}
             events={that.state.events}
+            handlers={handlers}
         />;
     }
 }

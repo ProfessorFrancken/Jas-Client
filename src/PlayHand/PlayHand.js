@@ -67,10 +67,7 @@ export default class PlayHand extends Component {
 
             let pointsEarnedByPlayingTeam = team === this.props.team
                 ? points
-                : this.maxPointsInThisGame() - points;
-
-
-            console.log(pointsEarnedByPlayingTeam, this.pointsToWin());
+                : this.maxPointsInThisGame() - parseInt(points, 10);
 
             this.props.pushEvent({
                 name: "PointsWereCounted",
@@ -82,45 +79,6 @@ export default class PlayHand extends Component {
                     fame: this.state.fame
                 }
             });
-
-            // Wet
-            if (pointsEarnedByPlayingTeam < this.pointsToWin()) {
-                // If we count our points
-                if (team === this.props.team) {
-                    swal("Wet!", capitalizeFirstLetter(players) + " went wet!", "warning");
-                } else {
-                    swal("Wet!", capitalizeFirstLetter(players) + " went wet!", "success");
-                }
-
-                this.props.pushEvent({
-                    name: "TeamWentWet",
-                    payload: {
-                        gameId: this.props.gameId,
-                        team,
-                        fame: this.state.fame,
-                        maxPoints: this.maxPointsInThisGame(),
-                    }
-                });
-            } else {
-                if (team === this.props.team) {
-                    swal("Nice!", capitalizeFirstLetter(players) + " earned " + points + " points!", "success");
-                } else {
-                    swal("Played", capitalizeFirstLetter(players) + " earned " + points + " points!", "warning");
-                }
-
-                this.props.pushEvent({
-                    name: "HandWasCompleted",
-                    payload: {
-                        gameId: this.props.gameId,
-                        fame: this.state.fame,
-
-                        countedBy: team,
-                        points: parseInt(points, 10),
-                        maxPoints: this.maxPointsInThisGame(),
-                    }
-                });
-            }
-
         });
     }
 
@@ -185,7 +143,6 @@ export default class PlayHand extends Component {
                     maxPoints: this.maxPointsInThisGame(),
                 }
             });
-            return ;
         }
         );
     }
