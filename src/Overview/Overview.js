@@ -43,6 +43,39 @@ export default class Overview extends Component {
         let totals = {
             we: 0, we_fame: 0, they: 0, they_fame: 0
         };
+
+        let ResultOfHand = (props) => {
+            let { idx, handNumber, hand } = props;
+
+            let fameByUs = sumFame(hand.fame.filter((fame) => fame.team === 'we'));
+            let fameByThem = sumFame(hand.fame.filter((fame) => fame.team === 'they'));
+
+            let [we, they] = [hand.we, hand.they];
+            if (hand.pit) {
+                if (we > 0) {
+                    we = 'P';
+                } else {
+                    they = 'P';
+                }
+            }
+
+            if (hand.wet) {
+                if (we === 0) {
+                    we = 'N';
+                } else {
+                    they = 'N';
+                }
+            }
+
+            return <tr key={idx}>
+                <td>{handNumber}</td>
+                <td>{we}</td>
+                <td>{fameByUs}</td>
+                <td>{they}</td>
+                <td>{fameByThem}</td>
+            </tr>
+        };
+
         let tableBody = [...chunkedhands.map((hands, branchNumber) => {
             hands = hands.filter((hand) => Object.keys(hand).length !== 0);
 
@@ -72,17 +105,9 @@ export default class Overview extends Component {
             }
 
             body.push(
-                ...hands.reverse().map((hand, idx) => {
-                    return (
-                        <tr key={idx}>
-                            <td>{branchNumber * 4 + hands.length - idx }</td>
-                            <td>{hand.we}</td>
-                            <td>{sumFame(hand.fame.filter((fame) => fame.team === 'we'))}</td>
-                            <td>{hand.they}</td>
-                            <td>{sumFame(hand.fame.filter((fame) => fame.team === 'they'))}</td>
-                        </tr>
-                    )
-                })
+                ...hands.reverse().map(
+                    (hand, idx) => <ResultOfHand idx={idx} handNumber={branchNumber * 4 + hands.length - idx } hand={hand} />
+                )
             );
 
             return body;
