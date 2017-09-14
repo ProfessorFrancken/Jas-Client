@@ -9,12 +9,12 @@ export default class AddFameToHand extends Component {
     };
 
     render() {
-        let btnStyle = "btn btn-outline-primary btn-block btn-lg my-3";
+        let btnStyle = "rounded-0 btn btn-outline-primary btn-block btn-lg my-3";
 
         return (
-            <ul className={"list-unstyled row mb-0" + (this.props.team === 'We' ? '' : ' bg-light')}>
+            <ul className={"list-unstyled row no-gutters mb-0" + (this.props.team === 'We' ? '' : ' bg-light')}>
                 <li className="col-sm-12 col-md-3 d-flex align-items-center">
-                    <h4>
+                    <h4 className="h6">
                         {this.props.team} <small> ({this.props.fame} fame) </small>
                     </h4>
                 </li>
