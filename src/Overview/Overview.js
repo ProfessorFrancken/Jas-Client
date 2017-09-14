@@ -14,6 +14,17 @@ export default class Overview extends Component {
         });
     }
 
+    finishGame() {
+        this.props.pushEvent({
+            name: "GameWasFinished",
+            payload: {
+                gameId: this.props.gameId,
+                hands: this.props.hands,
+                players: this.props.players
+            }
+        });
+    }
+
     dealer() {
         return this.props.players[(this.props.hands.length - 1) % 4].name
     }
@@ -77,12 +88,23 @@ export default class Overview extends Component {
             return body;
                         })].reverse();
 
+
+        let PlayNewHand = () => {
+            return <button className="btn btn-lg btn-block btn-primary rounded-0" onClick={() => this.dealHand()}>
+                Deal a new hand
+            </button>;
+        }
+
+        let FinishGame = () => {
+            return <button className="btn btn-lg btn-block btn-warning rounded-0" onClick={() => this.finishGame()}>
+                You've finished this game, click here to start a new game
+            </button>
+        }
+
         return (
             <div className="card my-4">
 
-                <button className="btn btn-lg btn-block btn-primary rounded-0" onClick={() => this.dealHand()}>
-                    Deal a new hand
-                </button>
+                {this.props.hands.length >= 16 ? <FinishGame /> : <PlayNewHand />}
 
                 <div className="row no-gutters d-flex justify-content-around align-items-center">
                     {this.props.players.map((player, idx) => {
@@ -90,7 +112,6 @@ export default class Overview extends Component {
                          let dealerStyle = "bg-dark text-white";
                          let playerStyle = "";
 
-                         console.log(idx);
                          return <div className="col">
                              <div className={"text-center p-4 " + (isDealer ? dealerStyle : playerStyle)}>
                                  {idx + 1}. {player.name} {isDealer ? <span><br />(Dealer)</span> : ""}
