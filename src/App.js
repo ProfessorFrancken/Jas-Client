@@ -80,6 +80,11 @@ class JasApp extends Component {
 
         const reducers = [
             (state, event) => {
+                if (event.name === "GameWasFinished") {
+                    return initialState;
+                }
+            },
+            (state, event) => {
                 if (event.name === "PlayerAdded") {
                     return { ...state, players: [...state.players, {
                         team: event.payload.team,
