@@ -21,6 +21,55 @@ export default [
             capitalizeFirstLetter(players) + " went wet!",
             (event.payload.team === state.bid.team) ? "warning" : "success"
         );
+
+        let wePoints = event.payload.team === 'we' ? 0 : event.payload.maxPoints;
+
+        let teamReceivingFame = event.payload.team === 'we' ? 'they' : 'we';
+
+        that.pushEvent({
+            name: "HandWasCompleted",
+            payload: {
+                gameId: event.payload.gameId,
+                fame: event.payload.fame.map((f) => {
+                    return { team: teamReceivingFame, fame: f.fame }
+                }),
+
+                we: wePoints,
+                they: event.payload.maxPoints - wePoints,
+
+                wet: true,
+                pit: false,
+                forsaken: false
+            }
+        });
+    },
+
+    (event, state, that) => {
+        if (event.name !== "TeamReceivedAPit") {
+            return;
+        }
+
+        let wePoints = event.payload.team === 'we' ? event.payload.maxPoints : 0;
+
+        let teamReceivingFame = event.payload.team;
+
+        that.pushEvent({
+            name: "HandWasCompleted",
+            payload: {
+                gameId: event.payload.gameId,
+                fame: event.payload.fame.map((f) => {
+                    console.log("giving fame to a team", f);
+                    return { team: teamReceivingFame, fame: f.fame }
+                }),
+
+                we: wePoints,
+                they: event.payload.maxPoints - wePoints,
+
+                wet: false,
+                pit: true,
+                forsaken: false
+            }
+        });
     },
 
     // Card Counter
@@ -64,12 +113,16 @@ export default [
                 name: "TeamWentWet",
                 payload: {
                     gameId: event.payload.gameId,
-                    team: event.payload.countedBy,
+                    team: state.bid.team,
                     fame: event.payload.fame,
                     maxPoints: event.payload.maxPoints,
                 }
             });
         } else {
+            let maxPoints = event.payload.maxPoints;
+            let wePoints = event.payload.countedBy === 'we' ? points : maxPoints - points;
+            let theyPoints = maxPoints - wePoints;
+
             that.pushEvent({
                 name: "HandWasCompleted",
                 payload: {
@@ -79,6 +132,13 @@ export default [
                     countedBy: event.payload.countedBy,
                     points: event.payload.points,
                     maxPoints: event.payload.maxPoints,
+
+                    we: wePoints,
+                    they: theyPoints,
+
+                    wet: false,
+                    pit: false,
+                    forsaken: false
                 }
             });
         }

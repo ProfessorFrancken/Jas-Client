@@ -133,8 +133,6 @@ class JasApp extends Component {
                     let wePoints = 0;
                     let theyPoints = 0;
 
-                    let fame = event.payload.fame;
-
                     if (event.payload.countedBy === "we") {
                         wePoints = event.payload.points;
                         theyPoints = event.payload.maxPoints - wePoints;
@@ -148,78 +146,8 @@ class JasApp extends Component {
                         current_hand: {
                             we: wePoints,
                             they: theyPoints,
-                            fame: fame
+                            fame: event.payload.fame
                         }
-                    };
-                }
-
-                if (event.name === "TeamWentWet") {
-
-                    let wePoints = 0;
-                    let theyPoints = 0;
-
-                    let fame = event.payload.fame;
-
-                    if (event.payload.team === "we") {
-                        wePoints = 0;
-                        theyPoints = event.payload.maxPoints;
-
-                        fame = fame.map((f) => {
-                            return { team: "they", fame: f.fame }
-                        });
-                    } else {
-                        theyPoints = 0;
-                        wePoints = event.payload.maxPoints;
-
-                        fame = fame.map((f) => {
-                            return { team: "we", fame: f.fame }
-                        });
-                    }
-
-                    return {
-                        ...state,
-                        currentView: 'overview',
-                        hands: [...state.hands, {
-                            we: wePoints,
-                            they: theyPoints,
-                            fame: fame
-                        }]
-                    };
-
-                }
-
-                if (event.name === "TeamReceivedAPit") {
-
-                    let wePoints = 0;
-                    let theyPoints = 0;
-
-                    let fame = event.payload.fame;
-
-
-                    if (event.payload.team === "we") {
-                        wePoints = event.payload.maxPoints;
-                        theyPoints = 0;
-                        fame.push({
-                            team: "we",
-                            fame: 100
-                        })
-                    } else {
-                        theyPoints = event.payload.maxPoints;
-                        wePoints = 0;
-                        fame.push({
-                            team: "they",
-                            fame: 100
-                        })
-                    }
-
-                    return {
-                        ...state,
-                        currentView: 'overview',
-                        hands: [...state.hands, {
-                            we: wePoints,
-                            they: theyPoints,
-                            fame: fame
-                        }]
                     };
                 }
 
@@ -229,9 +157,11 @@ class JasApp extends Component {
                         current_hand: undefined,
                         currentView: 'overview',
                         hands: [...state.hands, {
-                            we: state.current_hand.we,
-                            they: state.current_hand.they,
-                            fame: state.current_hand.fame
+                            we:   event.payload.we,
+                            they: event.payload.they,
+                            fame: event.payload.fame,
+                            wet: event.payload.wet,
+                            pit: event.payload.pit,
                         }]
                     };
                 }
