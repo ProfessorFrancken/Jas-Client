@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 export default class AddFameToHand extends Component {
+    static propTypes = {
+        team: PropTypes.string.isRequired,
+        fame: PropTypes.number.isRequired,
+        addFame: PropTypes.func.isRequired,
+    };
+
     render() {
         let btnStyle = "btn btn-outline-primary btn-block btn-lg my-3";
 
