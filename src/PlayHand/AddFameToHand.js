@@ -12,17 +12,13 @@ export default class AddFameToHand extends Component {
                     </h4>
                 </li>
 
-                <li className="col-4 col-md-3 d-flex align-items-center">
-                    <button className={btnStyle} onClick={() => this.props.addFame(20)}>20</button>
-                </li>
-
-                <li className="col-4 col-md-3 d-flex align-items-center">
-                    <button className={btnStyle} onClick={() => this.props.addFame(50)}>50</button>
-                </li>
-
-                <li className="col-4 col-md-3 d-flex align-items-center">
-                    <button className={btnStyle} onClick={() => this.props.addFame(100)}>100</button>
-                </li>
+		            {[20, 50, 100].map((fame) => {
+                	   return <li key={fame} className="col-4 col-md-3 d-flex align-items-center">
+		                     <button className={btnStyle} onClick={() => this.props.addFame(fame)}>
+					                   + {fame} <span className="d-none d-md-inline">fame</span>
+				                 </button>
+	                   </li>
+		            })}
             </ul>
         );
     }
