@@ -50,7 +50,6 @@ export default class PlayHand extends Component {
             type: "input",
             showCancelButton: true,
             closeOnConfirm: false,
-            animation: "slide-from-top",
             inputPlaceholder: "Points",
             inputType: "number",
             html: true
@@ -61,8 +60,10 @@ export default class PlayHand extends Component {
             }
 
             if (points === "" || points > this.maxPointsInThisGame()) {
-                swal.showInputError("You should be capable enough to be able to count cards");
-                return false
+                swal.showInputError(
+                    "You should be capable enough to be able to count cards"
+                );
+                return false;
             }
 
             let pointsEarnedByPlayingTeam = team === this.props.team
@@ -79,6 +80,10 @@ export default class PlayHand extends Component {
                     fame: this.state.fame
                 }
             });
+
+            swal.close();
+
+            return true;
         });
     }
 
