@@ -109,11 +109,7 @@ class JasApp extends Component {
                     return { ...state, currentView: 'hand' };
                 }
 
-                if ([
-                    "HandWasCompleted",
-//                    "TeamReceivedAPit",
-//                    "TeamWentWet"
-                    ].includes(event.name)) {
+                if (event.name === "HandWasCompleted") {
                     return { ...state, currentView: 'overview' };
                 }
             },
