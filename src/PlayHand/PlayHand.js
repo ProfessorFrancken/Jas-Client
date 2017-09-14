@@ -111,7 +111,7 @@ export default class PlayHand extends Component {
                     team,
                     anti,
                     maxPoints: this.maxPointsInThisGame(),
-                    fame: this.state.fame
+                    fame: [...this.state.fame, { team, fame: 100 }]
                 }
             });
         }
