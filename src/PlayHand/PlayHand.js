@@ -204,16 +204,17 @@ export default class PlayHand extends Component {
 
         return (
         <div className="card my-4">
-            <div className="card-body">
-                <h2>
-                    Play hand
-                    <small className="ml-3 text-muted">
-                        {capitalizeFirstLetter(this.props.team) + " "}
-                        ({playingPlayers.join(' and ')})
-                        play <Bid bid={this.props.bid} suit={this.props.suit} />
+            <div className="card-header">
+
+                <h2 className="h5 text-center text-muted">
+                    {playingPlayers.join(' and ')} play <Bid bid={this.props.bid} suit={this.props.suit} />
+                    <small>
+                        (they need at least {this.pointsToWin()} points)
                     </small>
                 </h2>
+            </div>
 
+            <div className="card-body bg-light">
                 <FameFromHand
                     lastFame={lastFame}
                     undoLastFame={() => that.undoLastFame()}
@@ -228,14 +229,11 @@ export default class PlayHand extends Component {
                     fameByThem={fameByThem}
                     addFameToThem={(fame) => that.addFameToThey(fame)}
                 />
+            </div>
 
-                <hr />
-
-                <h3>
-                    Complete hand:
-                    <small>
-                        {this.players(this.props.team).join(' and ')} require {this.pointsToWin()} points to win
-                    </small>
+            <div className="card-body">
+                <h3 className="h5">
+                    Finsih playing hand:
                 </h3>
 
                 <CompleteHand
