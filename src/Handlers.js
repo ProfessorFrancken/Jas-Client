@@ -142,6 +142,24 @@ export default [
                 }
             });
         }
-    }
+    },
 
+    (event, state, that) => {
+        if (event.name !== "HandWasCompleted") {
+            return;
+        }
+
+        let branches = state.branches.length;
+
+        let latestBranch = state.branches[branches - 1];
+
+        // Start a new branch if 4 hands wer eplayed and the game isn't finished yet
+        // in hindsight we should do this event when a new hand is played
+        if (latestBranch.hands.length === 3 && branches < 4) {
+            that.pushEvent({
+                name: "BranchWasCompleted",
+                payload: {}
+            });
+        }
+    }
 ];

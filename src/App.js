@@ -73,7 +73,10 @@ class JasApp extends Component {
             current_hand : undefined,
 
             // overview state (all games)
-            hands: []
+            hands: [],
+            branches: [{ number: 1, we: 0, they: 0, fame: [], hands: [],
+                         we_fame: 0, they_fame: 0,
+            }],
         };
 
         /* initialState = filledState;*/
@@ -157,6 +160,7 @@ class JasApp extends Component {
                         current_hand: undefined,
                         currentView: 'overview',
                         hands: [...state.hands, {
+                            number: state.hands.length,
                             we:   event.payload.we,
                             they: event.payload.they,
                             fame: event.payload.fame,
@@ -165,6 +169,56 @@ class JasApp extends Component {
                         }]
                     };
                 }
+            },
+
+            (state, event) => {
+                if (event.name === "BranchWasCompleted") {
+                    let lastBranch = state.branches[state.branches.length - 1];
+
+                    // Idea: add  an option to swithc branch statistics to global or local for which we can simply use a different projector
+                    return {
+                        ...state,
+                        branches: [ ...state.branches, {
+                            number: state.branches.length + 1,
+                            we: lastBranch.we,
+                            they: lastBranch.they,
+                            we_fame: lastBranch.we_fame,
+                            they_fame: lastBranch.they_fame,
+                            fame: lastBranch.fame,
+                            hands: [],
+                        }]
+                    };
+                }
+
+                if (event.name === "HandWasCompleted") {
+                    let currentBranch = state.branches[state.branches.length - 1];
+
+                    // Add the hand to our current branch and count statistics
+                    return {
+                        ...state,
+                        branches: [
+                            ...state.branches.slice(0, -1),
+                            {
+                                number: currentBranch.number,
+                                we: currentBranch.we + event.payload.we,
+                                they: currentBranch.they + event.payload.they,
+                                fame: [...currentBranch.fame, ...event.payload.fame],
+                                we_fame: 0,
+                                they_fame: 0,
+
+                                hands: [ ...currentBranch.hands, {
+                                    number: (currentBranch.hands.length + 1) + (currentBranch.number - 1) * 4,
+                                    we:   event.payload.we,
+                                    they: event.payload.they,
+                                    fame: event.payload.fame,
+                                    wet: event.payload.wet,
+                                    pit: event.payload.pit,
+                                }]
+                            }
+                        ]
+                    }
+                }
+
             },
         ];
 
@@ -218,6 +272,7 @@ class JasApp extends Component {
                     gameId={this.state.gameId}
                     players={this.state.players}
                     hands={this.state.hands}
+                    branches={this.state.branches}
                 />
             default:
                 return <h2>Whoops something went terribly wrong!</h2>

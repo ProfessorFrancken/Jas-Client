@@ -68,51 +68,13 @@ export default class Overview extends Component {
             }
 
             return <tr key={idx}>
-                <td>{handNumber}</td>
+                <td>{hand.number}</td>
                 <td>{we}</td>
                 <td>{fameByUs}</td>
                 <td>{they}</td>
                 <td>{fameByThem}</td>
             </tr>
         };
-
-        let tableBody = [...chunkedhands.map((hands, branchNumber) => {
-            hands = hands.filter((hand) => Object.keys(hand).length !== 0);
-
-            let body = [];
-
-            if (hands.length === 4) {
-                totals = {
-                    we: totals.we + sum(hands.map((hand) => hand.we === 'Wet' ? 0 : hand.we )),
-                    we_fame: totals.we_fame + sum(hands.map((hand) => sumFame(hand.fame.filter((fame) => fame.team === 'we')))),
-                    they: totals.they + sum(hands.map((hand) => hand.they === 'Wet' ? 0 : hand.they )),
-                    they_fame: totals.they_fame + sum(hands.map((hand) => sumFame(hand.fame.filter((fame) => fame.team === 'they')))),
-                };
-
-                body.push(
-                    <tr className="bg-dark text-white">
-                        <td>
-                            <strong>
-                                Branch {branchNumber + 1}
-                            </strong>
-                        </td>
-                        <td>{totals.we}</td>
-                        <td>{totals.we_fame}</td>
-                        <td>{totals.they}</td>
-                        <td>{totals.they_fame}</td>
-                    </tr>
-                );
-            }
-
-            body.push(
-                ...hands.reverse().map(
-                    (hand, idx) => <ResultOfHand idx={idx} handNumber={branchNumber * 4 + hands.length - idx } hand={hand} />
-                )
-            );
-
-            return body;
-                        })].reverse();
-
 
         let PlayNewHand = () => {
             return <button className="btn btn-lg btn-block btn-primary rounded-0" onClick={() => this.dealHand()}>
@@ -126,10 +88,12 @@ export default class Overview extends Component {
             </button>
         }
 
+        let currentBranch = this.props.branches[this.props.branches.length - 1];
+
         return (
             <div className="card my-4">
 
-                {this.props.hands.length >= 16 ? <FinishGame /> : <PlayNewHand />}
+                {(this.props.branches.length === 4 && currentBranch.hands.length === 4) ? <FinishGame /> : <PlayNewHand />}
 
                 <div className="row no-gutters d-flex justify-content-around align-items-center">
                     {this.props.players.map((player, idx) => {
@@ -161,7 +125,33 @@ export default class Overview extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {[...tableBody]}
+                        {this.props.branches.reverse().map((branch, idx) => {
+
+                             let branchNumber = this.props.branches.length - idx - 1;
+                             let hands = branch.hands;
+                             let body = branch.hands.reverse().map((hand, idx) => {
+                                 let handNumber = branchNumber * 4 + hands.length - idx ;
+
+                                 return <ResultOfHand idx={handNumber} handNumber={handNumber} hand={hand} />;
+                             });
+
+                             if (branch.hands.length === 4) {
+                                 body.unshift(
+                                     <tr className="bg-dark text-white">
+                                         <td>
+                                             <strong>
+                                                 Branch {branch.number}
+                                             </strong>
+                                         </td>
+                                         <td>{branch.we}</td>
+                                         <td>{branch.we_fame}</td>
+                                         <td>{branch.they}</td>
+                                         <td>{branch.they_fame}</td>
+                                     </tr>
+                                 );
+                             }
+                             return [...body]
+                        })}
                     </tbody>
                 </table>
             </div>
