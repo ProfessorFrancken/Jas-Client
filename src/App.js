@@ -193,6 +193,11 @@ class JasApp extends Component {
                 if (event.name === "HandWasCompleted") {
                     let currentBranch = state.branches[state.branches.length - 1];
 
+                    const sumFame = (numbers) => numbers.reduce((sum, next) => sum + next.fame, 0);
+
+                    const we_fame = currentBranch.we_fame + sumFame(event.payload.fame.filter((fame) => fame.team === 'we'));
+                    const they_fame = currentBranch.they_fame + sumFame(event.payload.fame.filter((fame) => fame.team === 'they'));
+
                     // Add the hand to our current branch and count statistics
                     return {
                         ...state,
@@ -203,8 +208,8 @@ class JasApp extends Component {
                                 we: currentBranch.we + event.payload.we,
                                 they: currentBranch.they + event.payload.they,
                                 fame: [...currentBranch.fame, ...event.payload.fame],
-                                we_fame: 0,
-                                they_fame: 0,
+                                we_fame: we_fame,
+                                they_fame: they_fame,
 
                                 hands: [ ...currentBranch.hands, {
                                     number: (currentBranch.hands.length + 1) + (currentBranch.number - 1) * 4,
@@ -219,6 +224,15 @@ class JasApp extends Component {
                     }
                 }
 
+            },
+
+            (state, event) => {
+                if (event.name === "HandWasCompleted") {
+                    // The fourth player is assumed to be the dealer, since
+                    // the first player wil play first
+                    let dealer = state.players[(state.hands.length - 1 + 4) % 4]
+                    return { ...state, dealer: dealer.name };
+                }
             },
         ];
 
@@ -271,8 +285,8 @@ class JasApp extends Component {
                     pushEvent={(event) => that.pushEvent(event)}
                     gameId={this.state.gameId}
                     players={this.state.players}
-                    hands={this.state.hands}
                     branches={this.state.branches}
+                    dealer={this.state.dealer}
                 />
             default:
                 return <h2>Whoops something went terribly wrong!</h2>

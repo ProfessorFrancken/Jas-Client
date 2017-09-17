@@ -26,7 +26,7 @@ export default class Overview extends Component {
     }
 
     dealer() {
-        return this.props.players[(this.props.hands.length - 1) % 4].name
+        return this.props.dealer
     }
 
     players(team) {
