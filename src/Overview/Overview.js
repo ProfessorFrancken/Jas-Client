@@ -1,6 +1,25 @@
 import React, { Component } from 'react';
+import FontAwesome from 'react-fontawesome';
 
 const sumFame = (numbers) => numbers.reduce((sum, next) => sum + next.fame, 0);
+
+let Fame = (props) => {
+    let { fame } = props;
+
+    let tally = fame.sort((fame) => fame.fame).map((fame) => {
+        if (fame.fame === 20) {
+            return 'Ⅰ';
+        }
+        if (fame.fame === 50) {
+            return 'Ⅴ';
+        }
+        if (fame.fame === 100) {
+            return 'Ⅹ';
+        }
+    }).join('');
+
+    return <span >{tally}</span>;
+}
 
 export default class Overview extends Component {
 
@@ -36,8 +55,6 @@ export default class Overview extends Component {
     }
 
     render() {
-        let chunkedhands = [...this.props.hands].chunk(4);
-
         const sum = (numbers) => numbers.reduce((sum, next) => sum + next, 0);
 
         let totals = {
@@ -47,8 +64,8 @@ export default class Overview extends Component {
         let ResultOfHand = (props) => {
             let { idx, handNumber, hand } = props;
 
-            let fameByUs = sumFame(hand.fame.filter((fame) => fame.team === 'we'));
-            let fameByThem = sumFame(hand.fame.filter((fame) => fame.team === 'they'));
+            let fameByUs = hand.fame.filter((fame) => fame.team === 'we');
+            let fameByThem = hand.fame.filter((fame) => fame.team === 'they');
 
             let [we, they] = [hand.we, hand.they];
             if (hand.pit) {
@@ -70,9 +87,9 @@ export default class Overview extends Component {
             return <tr key={idx}>
                 <td>{hand.number}</td>
                 <td>{we}</td>
-                <td>{fameByUs}</td>
+                <td><Fame fame={fameByUs} /></td>
                 <td>{they}</td>
-                <td>{fameByThem}</td>
+                <td><Fame fame={fameByThem} /></td>
             </tr>
         };
 
@@ -83,9 +100,16 @@ export default class Overview extends Component {
         }
 
         let FinishGame = () => {
-            return <button className="btn btn-lg btn-block btn-warning rounded-0" onClick={() => this.finishGame()}>
-                You've finished this game, click here to start a new game
-            </button>
+            return (
+                <div>
+                    <p className="card-body text-center">
+                        You've finished this game
+                    </p>
+                    <button className="btn btn-lg btn-block btn-warning rounded-0" onClick={() => this.finishGame()}>
+                        Play a new game
+                    </button>
+                </div>
+            )
         }
 
         let currentBranch = this.props.branches[this.props.branches.length - 1];
@@ -101,9 +125,11 @@ export default class Overview extends Component {
                          let dealerStyle = "bg-dark text-white";
                          let playerStyle = "";
 
-                         return <div className="col">
+                         return <div className="col-6 col-sm-3">
                              <div className={"text-center p-4 " + (isDealer ? dealerStyle : playerStyle)}>
-                                 {idx + 1}. {player.name} {isDealer ? <span><br />(Dealer)</span> : ""}
+                                 {isDealer ? <FontAwesome name="user-circle" className="mr-2" /> : ""}
+                                 {idx + 1}.
+                                 {player.name}
                              </div>
                          </div>
                     })}
