@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import FontAwesome from 'react-fontawesome';
 
-const sumFame = (numbers) => numbers.reduce((sum, next) => sum + next.fame, 0);
-
 let Fame = (props) => {
     let { fame } = props;
 
@@ -16,6 +14,8 @@ let Fame = (props) => {
         if (fame.fame === 100) {
             return 'Ⅹ';
         }
+
+        return fame.fame;
     }).join('');
 
     return <span >{tally}</span>;
@@ -55,14 +55,8 @@ export default class Overview extends Component {
     }
 
     render() {
-        const sum = (numbers) => numbers.reduce((sum, next) => sum + next, 0);
-
-        let totals = {
-            we: 0, we_fame: 0, they: 0, they_fame: 0
-        };
-
         let ResultOfHand = (props) => {
-            let { idx, handNumber, hand } = props;
+            let { hand } = props;
 
             let fameByUs = hand.fame.filter((fame) => fame.team === 'we');
             let fameByThem = hand.fame.filter((fame) => fame.team === 'they');
@@ -84,7 +78,7 @@ export default class Overview extends Component {
                 }
             }
 
-            return <tr key={idx}>
+            return <tr key={hand.number}>
                 <td>{hand.number}</td>
                 <td>{we}</td>
                 <td><Fame fame={fameByUs} /></td>
@@ -92,6 +86,24 @@ export default class Overview extends Component {
                 <td><Fame fame={fameByThem} /></td>
             </tr>
         };
+
+        let ResultOfBranch = (props) => {
+            let { branch } = props;
+
+            return (
+                <tr className="bg-dark text-white">
+                    <td>
+                        <strong>
+                            Branch {branch.number}
+                        </strong>
+                    </td>
+                    <td>{branch.we}</td>
+                    <td>{branch.we_fame}</td>
+                    <td>{branch.they}</td>
+                    <td>{branch.they_fame}</td>
+                </tr>
+            );
+        }
 
         let PlayNewHand = () => {
             return <button className="btn btn-lg btn-block btn-primary rounded-0" onClick={() => this.dealHand()}>
@@ -125,7 +137,7 @@ export default class Overview extends Component {
                          let dealerStyle = "bg-dark text-white";
                          let playerStyle = "";
 
-                         return <div className="col-6 col-sm-3">
+                         return <div className="col-6 col-sm-3" key={idx}>
                              <div className={"text-center p-4 " + (isDealer ? dealerStyle : playerStyle)}>
                                  {isDealer ? <FontAwesome name="user-circle" className="mr-2" /> : ""}
                                  {idx + 1}.
@@ -152,28 +164,13 @@ export default class Overview extends Component {
                     </thead>
                     <tbody>
                         {this.props.branches.reverse().map((branch, idx) => {
+                             let body = branch.hands.reverse()
+                                              .map((hand, idx) => <ResultOfHand hand={hand} />);
 
-                             let branchNumber = this.props.branches.length - idx - 1;
-                             let hands = branch.hands;
-                             let body = branch.hands.reverse().map((hand, idx) => {
-                                 let handNumber = branchNumber * 4 + hands.length - idx ;
-
-                                 return <ResultOfHand idx={handNumber} handNumber={handNumber} hand={hand} />;
-                             });
-
+                             // Whenever a branch is completed, show its statistics
                              if (branch.hands.length === 4) {
                                  body.unshift(
-                                     <tr className="bg-dark text-white">
-                                         <td>
-                                             <strong>
-                                                 Branch {branch.number}
-                                             </strong>
-                                         </td>
-                                         <td>{branch.we}</td>
-                                         <td>{branch.we_fame}</td>
-                                         <td>{branch.they}</td>
-                                         <td>{branch.they_fame}</td>
-                                     </tr>
+                                     <ResultOfBranch branch={branch} />
                                  );
                              }
                              return [...body]

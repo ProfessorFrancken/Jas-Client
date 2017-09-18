@@ -9,7 +9,6 @@ import SweetAlert from 'sweetalert-react'; // eslint-disable-line import/no-extr
 import sweetAlert from 'sweetalert';
 import 'sweetalert/dist/sweetalert.css';
 
-const capitalizeFirstLetter = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 const sumFame = (numbers) => numbers.reduce((sum, next) => sum + next.fame, 0);
 const swal = sweetAlert;
 
@@ -66,9 +65,7 @@ export default class PlayHand extends Component {
                 return false;
             }
 
-            let pointsEarnedByPlayingTeam = team === this.props.team
-                ? points
-                : this.maxPointsInThisGame() - parseInt(points, 10);
+            swal.close();
 
             this.props.pushEvent({
                 name: "PointsWereCounted",
@@ -80,8 +77,6 @@ export default class PlayHand extends Component {
                     fame: this.state.fame
                 }
             });
-
-            swal.close();
 
             return true;
         });

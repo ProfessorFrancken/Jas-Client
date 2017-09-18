@@ -7,7 +7,6 @@ import Bidding from './Bidding/Bidding';
 import PlayHand from './PlayHand/PlayHand';
 import Overview from './Overview/Overview';
 
-import filledState from './filled_state';
 import handlers from './Handlers';
 import Help from './Help';
 
